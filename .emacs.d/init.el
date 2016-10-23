@@ -2,13 +2,13 @@
 (add-to-list 'load-path "~/.emacs.d/extra")
 
 ;; set up package repository
-(require 'package)
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("melpa" . "http://melpa.org/packages/")))
-(package-initialize)
+;(require 'package)
+;(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+;                         ("melpa" . "http://melpa.org/packages/")))
+;(package-initialize)
 
 ;; set default theme
-(load-theme 'autumn-light t)
+;(load-theme 'autumn-light t)
 
 ;; display time
 (setq display-time-24hr-format nil)
@@ -20,18 +20,18 @@
 ;    (add-to-list 'default-frame-alist '(font . "Hack-9")))
 
 ;; set window size
-(setq default-frame-alist
-      '((top    . 30)
-        (left   . 500)
-        (width  . 93)
-        (height . 48)))
+;(setq default-frame-alist
+;      '((top    . 30)
+;        (left   . 500)
+;        (width  . 93)
+;        (height . 48)))
 
 ;; line number mode
 (global-linum-mode t)
 
 
 ;; --------------------- Boolean Settings --------------------------
-(tool-bar-mode 0)
+;(tool-bar-mode 0)
 (blink-cursor-mode 0)
 (menu-bar-mode 1)
 (setq column-number-mode t)
@@ -56,7 +56,7 @@
 ;; ------------------------- value settings -----------------------
 (setq frame-title-format "%b - emacs")
 (setq user-full-name "Yiqing Liu")
-(setq user-mail-address "logicomiracle@gmail.com")
+(setq user-mail-address "yl98@iu.edu")
 
 (setq kill-ring-max 3000)
 (setq undo-limit 536000000)
@@ -201,14 +201,18 @@
 
 
 ;;---------------------- python-mode --------------------
-(setq python-program-name "python")
+
+(setq python-program-name "python3")
+(setq python-shell-interpreter "python3")
 
 ;;---------------------- paredit-mode -------------------
+
 (autoload 'paredit-mode "paredit"
   "Minor mode for pseudo-structurally editing Lisp code."
   t)
 
 ;;---------------------- parenface-mode -----------------
+
 (defvar paren-face 'paren-face)
 
 (defface paren-face
@@ -286,11 +290,19 @@
   (scheme-split-window)
   (scheme-send-definition))
 
+(defun scheme-send-region-split-window ()
+  (interactive)
+  (scheme-split-window)
+  (scheme-send-region (mark) (point)))
+
 (add-hook 'scheme-mode-hook
   (lambda ()
     (paredit-mode 1)
     (define-key scheme-mode-map (kbd "<f5>")
       'scheme-send-last-sexp-split-window)
     (define-key scheme-mode-map (kbd "<f6>")
-      'scheme-send-definition-split-window)))
+      'scheme-send-definition-split-window)
+    (define-key scheme-mode-map (kbd "<f7>")
+      'scheme-send-region-split-window)))
+
 (put 'dired-find-alternate-file 'disabled nil)
