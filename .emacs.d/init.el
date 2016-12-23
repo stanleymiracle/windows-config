@@ -2,13 +2,13 @@
 (add-to-list 'load-path "~/.emacs.d/extra")
 
 ;; set up package repository
-;(require 'package)
-;(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-;                         ("melpa" . "http://melpa.org/packages/")))
-;(package-initialize)
+(require 'package)
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("melpa" . "http://melpa.org/packages/")))
+(package-initialize)
 
 ;; set default theme
-;(load-theme 'autumn-light t)
+(load-theme 'autumn-light t)
 
 ;; display time
 (setq display-time-24hr-format nil)
@@ -20,18 +20,18 @@
 ;    (add-to-list 'default-frame-alist '(font . "Hack-9")))
 
 ;; set window size
-;(setq default-frame-alist
-;      '((top    . 30)
-;        (left   . 500)
-;        (width  . 93)
-;        (height . 48)))
+(setq default-frame-alist
+      '((top    . 40)
+        (left   . 300)
+        (width  . 93)
+        (height . 48)))
 
 ;; line number mode
 (global-linum-mode t)
 
 
 ;; --------------------- Boolean Settings --------------------------
-;(tool-bar-mode 0)
+(tool-bar-mode 0)
 (blink-cursor-mode 0)
 (menu-bar-mode 1)
 (setq column-number-mode t)
@@ -56,7 +56,7 @@
 ;; ------------------------- value settings -----------------------
 (setq frame-title-format "%b - emacs")
 (setq user-full-name "Yiqing Liu")
-(setq user-mail-address "yl98@iu.edu")
+(setq user-mail-address "logicomiracle@gmail.com")
 
 (setq kill-ring-max 3000)
 (setq undo-limit 536000000)
@@ -122,6 +122,7 @@
 (setq bookmark-save-flag 1)
 (setq bookmark-default-file "~/.emacs.d/bookmarks")
 (global-set-key (kbd "<f2>") 'pop-tag-mark)
+
 
 (global-set-key (kbd "C-c C-c") 'copy-to-register)
 (global-set-key (kbd "C-c C-v") 'insert-register)
@@ -201,18 +202,14 @@
 
 
 ;;---------------------- python-mode --------------------
-
-(setq python-program-name "python3")
-(setq python-shell-interpreter "python3")
+(setq python-program-name "python")
 
 ;;---------------------- paredit-mode -------------------
-
 (autoload 'paredit-mode "paredit"
   "Minor mode for pseudo-structurally editing Lisp code."
   t)
 
 ;;---------------------- parenface-mode -----------------
-
 (defvar paren-face 'paren-face)
 
 (defface paren-face
@@ -292,12 +289,21 @@
 
 (defun scheme-send-region-split-window ()
   (interactive)
+  (mark-whole-buffer)
   (scheme-split-window)
   (scheme-send-region (mark) (point)))
 
+(global-prettify-symbols-mode 1)
+
+(defun pretty-lambda ()
+  (setq prettify-symbols-alist
+        '(("lambda" . 955))))
+(add-hook 'scheme-mode-hook 'pretty-lambda)
 (add-hook 'scheme-mode-hook
   (lambda ()
     (paredit-mode 1)
+    (define-key scheme-mode-map (kbd "C-c C-c")
+      'copy-to-register)
     (define-key scheme-mode-map (kbd "<f5>")
       'scheme-send-last-sexp-split-window)
     (define-key scheme-mode-map (kbd "<f6>")
