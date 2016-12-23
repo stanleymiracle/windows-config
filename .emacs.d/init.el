@@ -56,7 +56,7 @@
 ;; ------------------------- value settings -----------------------
 (setq frame-title-format "%b - emacs")
 (setq user-full-name "Yiqing Liu")
-(setq user-mail-address "logicomiracle@gmail.com")
+(setq user-mail-address "stanleyxmiracle@gmail.com")
 
 (setq kill-ring-max 3000)
 (setq undo-limit 536000000)
