@@ -8,7 +8,8 @@
 (package-initialize)
 
 ;; set default theme
-(load-theme 'autumn-light t)
+;(load-theme 'autumn-light t)
+(require 'deep-blue-theme)
 
 ;; display time
 (setq display-time-24hr-format nil)
@@ -100,7 +101,7 @@
 ;; ------------------------- global keys ---------------------------
 
 ;; disable minimize window
-(global-unset-key (kbd "C-z"))
+(global-unset-key (kbd "C-;"))
 (global-unset-key (kbd "s-q"))
 (global-unset-key (kbd "C-X C-Z"))
 (global-unset-key (kbd "M-R"))
@@ -177,7 +178,7 @@
   (scroll-behind (prefix-numeric-value n)))
 
 (global-set-key (kbd "C-q") 'scroll-n-lines-behind)
-(global-set-key (kbd "C-z") 'scroll-n-lines-ahead)
+(global-set-key (kbd "C-;") 'scroll-n-lines-ahead)
 
 
 ;; ------------------- language modes -------------------
