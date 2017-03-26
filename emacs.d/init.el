@@ -1,11 +1,22 @@
 ;;---------------------- the magic path ------------------
-(add-to-list 'load-path "~/.emacs.d/extra")
+;(add-to-list 'load-path "~/.emacs.d/extra")
 
 ;; set up package repository
 (require 'package)
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/")
+             t)
+;(package-refresh-contents)
+;; packages to install:
+;; -- color-theme-modern
+;; -- paredit
+;; -- racket-mode
+;; -- tabbar
+
+
+
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; set default theme
 ;(load-theme 'autumn-light t)
@@ -15,15 +26,10 @@
 (setq display-time-24hr-format nil)
 (display-time)
 
-;; set default font
-;(when (member "Hack" (font-family-list))
-;    (add-to-list 'initial-frame-alist '(font . "Hack-9"))
-;    (add-to-list 'default-frame-alist '(font . "Hack-9")))
-
 ;; set window size
 (setq default-frame-alist
       '((top    . 40)
-        (left   . 300)
+        (left   . 950)
         (width  . 93)
         (height . 48)))
 
@@ -32,6 +38,7 @@
 
 
 ;; --------------------- Boolean Settings --------------------------
+(tabbar-mode 1)
 (tool-bar-mode 0)
 (blink-cursor-mode 0)
 (menu-bar-mode 1)
@@ -41,6 +48,7 @@
 (setq visible-bell t)
 (setq inhibit-startup-message t)
 (setq mouse-yank-at-point t)
+(setq mouse-wheel-mode t)
 (setq enable-recursive-minibuffers nil)
 (auto-image-file-mode)
 (setq require-final-newline nil)
@@ -103,8 +111,14 @@
 ;; disable minimize window
 (global-unset-key (kbd "C-;"))
 (global-unset-key (kbd "s-q"))
-(global-unset-key (kbd "C-X C-Z"))
+(global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "M-R"))
+(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-<down>") 'shrink-window)
+(global-set-key (kbd "S-C-<up>") 'enlarge-window)
+(global-set-key (kbd "C-<tab>") 'tabbar-forward-tab)
+(global-set-key (kbd "S-C-<tab>") 'tabbar-backward-tab)
 
 ;; Useful Comment commands
 (defun comment-defun ()
@@ -183,15 +197,25 @@
 
 ;; ------------------- language modes -------------------
 (add-to-list 'auto-mode-alist '("\\.ss$" . scheme-mode))
+(add-to-list 'auto-mode-alist '("\\.scm$" . scheme-mode))
 (add-to-list 'auto-mode-alist '("\\.yin$" . yin-mode))
-(add-to-list 'auto-mode-alist '("\\.rkt$" . scheme-mode))
-(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.rkt$" . racket-mode))
+(add-to-list 'auto-mode-alist '("\\.el$" . emacs-lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.js$" . javascript-mode))
-(add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
-(add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
-(add-to-list 'auto-mode-alist '("\\.el$" . emacs-lisp-mode))
+;(add-to-list 'auto-mode-alist '("\\.js$" . javascript-mode))
+;(add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+;(add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
+;(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+
+;;---------------------- pretty lambda --------------------
+(global-prettify-symbols-mode 1)
+
+(defun pretty-lambda ()
+  (setq prettify-symbols-alist
+        '(("lambda" . 955))))
+(add-hook 'scheme-mode-hook 'pretty-lambda)
+(add-hook 'racket-mode-hook 'pretty-lambda)
 
 ;; Whitespace
 (require 'whitespace)
@@ -203,7 +227,7 @@
 
 
 ;;---------------------- python-mode --------------------
-(setq python-program-name "python")
+;(setq python-program-name "python")
 
 ;;---------------------- paredit-mode -------------------
 (autoload 'paredit-mode "paredit"
@@ -238,9 +262,25 @@
 (add-hook 'lisp-interaction-mode-hook
   (paren-face-add-support lisp-font-lock-keywords-2))
 
-(provide 'parenface)
 
-(set-face-foreground 'paren-face "DimGray")
+;(provide 'parenface)
+
+;(set-face-foreground 'paren-face "DimGray")
+
+;;---------------------- Racket -------------------
+(require 'racket-mode)
+(setq tab-always-indent 'complete)
+(setq racket-racket-program "racket")
+(setq racket-raco-program "raco")
+
+(add-hook 'racket-mode-hook
+          (lambda ()
+            (define-key racket-mode-map (kbd "C-c r") 'racket-run)))
+(add-hook 'racket-mode-hook
+  (lambda ()
+    (paredit-mode 1)
+    (paren-face-add-support racket-font-lock-keywords)
+    (set-face-foreground 'racket-paren-face "DimGray")))
 
 ;;---------------------- Scheme -------------------
 
@@ -290,16 +330,15 @@
 
 (defun scheme-send-region-split-window ()
   (interactive)
+  (scheme-split-window)
+  (scheme-send-region (mark) (point)))
+
+(defun scheme-send-buffer-split-window ()
+  (interactive)
   (mark-whole-buffer)
   (scheme-split-window)
   (scheme-send-region (mark) (point)))
 
-(global-prettify-symbols-mode 1)
-
-(defun pretty-lambda ()
-  (setq prettify-symbols-alist
-        '(("lambda" . 955))))
-(add-hook 'scheme-mode-hook 'pretty-lambda)
 (add-hook 'scheme-mode-hook
   (lambda ()
     (paredit-mode 1)
@@ -310,6 +349,21 @@
     (define-key scheme-mode-map (kbd "<f6>")
       'scheme-send-definition-split-window)
     (define-key scheme-mode-map (kbd "<f7>")
-      'scheme-send-region-split-window)))
+      'scheme-send-region-split-window)
+    (define-key scheme-mode-map (kbd "<f8>")
+      'scheme-send-buffer-split-window)))
 
 (put 'dired-find-alternate-file 'disabled nil)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages (quote (tabbar color-theme-modern paredit racket-mode))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
