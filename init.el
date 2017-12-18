@@ -9,13 +9,15 @@
              t)
 ;(package-refresh-contents)
 ;; packages to install:
-;; -- color-theme-modern
+;; -- color-theme-modernt
 ;; -- paredit
 ;; -- racket-mode
 ;; -- tabbar
 
+;; unicode workaround
+(setq inhibit-compacting-font-caches t)
 
-
+;(setq-default cursor-type 'bar) 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; set default theme
@@ -194,15 +196,26 @@
 (global-set-key (kbd "C-q") 'scroll-n-lines-behind)
 (global-set-key (kbd "C-;") 'scroll-n-lines-ahead)
 
+;; scroll one line at a time (less "jumpy" than defaults)
+;(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+;; (setq mouse-wheel-progressive-speed 15) ;; don't accelerate scrolling
+;; (setq mouse-wheel-follow-mouse 't) ;; scroll window under mousen
+;; (setq scroll-step 1) ;; keyboard scroll one line at a time
+(global-set-key [wheel-up] 'previous-line)
+(global-set-key [wheel-down] 'next-line)
+(global-set-key [wheel-right] 'backward-char)
+(global-set-key [wheel-left] 'forward-char)
+
 
 ;; ------------------- language modes -------------------
-(add-to-list 'auto-mode-alist '("\\.ss$" . scheme-mode))
+(add-to-list 'auto-mode-alist '("\\.ss$" . racket-mode))
 (add-to-list 'auto-mode-alist '("\\.scm$" . scheme-mode))
-(add-to-list 'auto-mode-alist '("\\.yin$" . yin-mode))
+(add-to-list 'auto-mode-alist '("\\.yin$" . scheme-mode))
 (add-to-list 'auto-mode-alist '("\\.rkt$" . racket-mode))
 (add-to-list 'auto-mode-alist '("\\.el$" . emacs-lisp-mode))
+(add-to-list 'auto-mode-alist '("\\.hs$" . haskell-mode))
 (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
+;(add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
 ;(add-to-list 'auto-mode-alist '("\\.js$" . javascript-mode))
 ;(add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 ;(add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
@@ -360,10 +373,16 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (tabbar color-theme-modern paredit racket-mode))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+ '(package-selected-packages
+   (quote
+    (helm tabbar color-theme-modern paredit racket-mode))))
+
+;; (custom-set-variables
+;;  ;; custom-set-variables was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(package-selected-packages
+;;    (quote
+;;     (helm haskell-mode tabbar color-theme-modern paredit racket-mode))))
+
